@@ -3,7 +3,7 @@ to build package:
 
 to export package:
   conan export . ckristen/master
-  conan test test_package lzma/1.2@ckristen/master
+  conan test test_package lzma/1.3@ckristen/master
 
 to upload package:
-  conan upload lzma/1.2@ckristen/master -r ckristen --all
+  conan upload lzma/1.3@ckristen/master -r ckristen --all

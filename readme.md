@@ -16,4 +16,4 @@ Add remote to get ckristen packages from bintray:
 ```conan remote add ckristen https://api.bintray.com/conan/ckristen/conan```
 
 Add dependency to your project:
-```lzma/1.2@ckristen/master```
+```lzma/1.3@ckristen/master```

@@ -56,29 +56,37 @@ struct ISeqOutStream {
      (result < size) means error */
 };
 
-typedef struct
-{
-  #ifdef USE_WINDOWS_FILE
+typedef struct {
+  ILookInStream vt;
+  const ISeekInStream *realStream;
+
+  size_t pos;
+  size_t size; /* it's data size */
+
+  /* the following variables must be set outside */
+  unsigned char *buf;
+  size_t bufSize;
+} CLookToRead2;
+
+typedef struct {
+#ifdef USE_WINDOWS_FILE
   HANDLE handle;
-  #else
+#else
   FILE *file;
-  #endif
+#endif
 } CSzFile;
 
-typedef struct
-{
+typedef struct {
   ISeqInStream vt;
   CSzFile file;
 } CFileSeqInStream;
 
-typedef struct
-{
+typedef struct {
   ISeekInStream vt;
   CSzFile file;
 } CFileInStream;
 
-typedef struct
-{
+typedef struct {
   ISeqOutStream vt;
   CSzFile file;
 } CFileOutStream;

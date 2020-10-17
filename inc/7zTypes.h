@@ -163,18 +163,6 @@ SRes LookInStream_Read2(const ILookInStream *stream, void *buf, size_t size,
                         SRes errorType);
 SRes LookInStream_Read(const ILookInStream *stream, void *buf, size_t size);
 
-typedef struct {
-  ILookInStream vt;
-  const ISeekInStream *realStream;
-
-  size_t pos;
-  size_t size; /* it's data size */
-
-  /* the following variables must be set outside */
-  Byte *buf;
-  size_t bufSize;
-} CLookToRead2;
-
 void LookToRead2_CreateVTable(CLookToRead2 *p, int lookahead);
 
 #define LookToRead2_Init(p)                                                    \
