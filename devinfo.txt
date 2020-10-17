@@ -1,0 +1,9 @@
+to build package:
+  conan create . ckristen/master --build=missing
+
+to export package:
+  conan export . ckristen/master
+  conan test test_package lzma/1.0@ckristen/master
+
+to upload package:
+  conan upload lzma/1.0@ckristen/master -r ckristen --all

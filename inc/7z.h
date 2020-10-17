@@ -5,6 +5,7 @@
 #define __7Z_H
 
 #include "7zTypes.h"
+#include "7zStructs.h"
 
 EXTERN_C_BEGIN
 
@@ -50,48 +51,11 @@ typedef struct
   CSzCoderInfo Coders[SZ_NUM_CODERS_IN_FOLDER_MAX];
 } CSzFolder;
 
-
 SRes SzGetNextFolderItem(CSzFolder *f, CSzData *sd);
-
-typedef struct
-{
-  UInt32 Low;
-  UInt32 High;
-} CNtfsFileTime;
-
-typedef struct
-{
-  Byte *Defs; /* MSB 0 bit numbering */
-  UInt32 *Vals;
-} CSzBitUi32s;
-
-typedef struct
-{
-  Byte *Defs; /* MSB 0 bit numbering */
-  // UInt64 *Vals;
-  CNtfsFileTime *Vals;
-} CSzBitUi64s;
 
 #define SzBitArray_Check(p, i) (((p)[(i) >> 3] & (0x80 >> ((i) & 7))) != 0)
 
 #define SzBitWithVals_Check(p, i) ((p)->Defs && ((p)->Defs[(i) >> 3] & (0x80 >> ((i) & 7))) != 0)
-
-typedef struct
-{
-  UInt32 NumPackStreams;
-  UInt32 NumFolders;
-
-  UInt64 *PackPositions;          // NumPackStreams + 1
-  CSzBitUi32s FolderCRCs;         // NumFolders
-
-  size_t *FoCodersOffsets;        // NumFolders + 1
-  UInt32 *FoStartPackStreamIndex; // NumFolders + 1
-  UInt32 *FoToCoderUnpackSizes;   // NumFolders + 1
-  Byte *FoToMainUnpackSizeIndex;  // NumFolders
-  UInt64 *CoderUnpackSizes;       // for all coders in all folders
-
-  Byte *CodersData;
-} CSzAr;
 
 UInt64 SzAr_GetFolderUnpackSize(const CSzAr *p, UInt32 folderIndex);
 
@@ -99,32 +63,6 @@ SRes SzAr_DecodeFolder(const CSzAr *p, UInt32 folderIndex,
     ILookInStream *stream, UInt64 startPos,
     Byte *outBuffer, size_t outSize,
     ISzAllocPtr allocMain);
-
-typedef struct
-{
-  CSzAr db;
-
-  UInt64 startPosAfterHeader;
-  UInt64 dataPos;
-  
-  UInt32 NumFiles;
-
-  UInt64 *UnpackPositions;  // NumFiles + 1
-  // Byte *IsEmptyFiles;
-  Byte *IsDirs;
-  CSzBitUi32s CRCs;
-
-  CSzBitUi32s Attribs;
-  // CSzBitUi32s Parents;
-  CSzBitUi64s MTime;
-  CSzBitUi64s CTime;
-
-  UInt32 *FolderToFile;   // NumFolders + 1
-  UInt32 *FileToFolder;   // NumFiles
-
-  size_t *FileNameOffsets; /* in 2-byte steps */
-  Byte *FileNames;  /* UTF-16-LE */
-} CSzArEx;
 
 #define SzArEx_IsDir(p, i) (SzBitArray_Check((p)->IsDirs, i))
 
@@ -147,8 +85,6 @@ size_t SzArEx_GetFileNameUtf16(const CSzArEx *p, size_t fileIndex, UInt16 *dest)
 size_t SzArEx_GetFullNameLen(const CSzArEx *p, size_t fileIndex);
 UInt16 *SzArEx_GetFullNameUtf16_Back(const CSzArEx *p, size_t fileIndex, UInt16 *dest);
 */
-
-
 
 /*
   SzArEx_Extract extracts file from archive
