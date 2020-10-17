@@ -2,6 +2,32 @@
 #include <stddef.h>
 #include <stdint.h>
 
+typedef struct ISzAlloc ISzAlloc;
+typedef const ISzAlloc *ISzAllocPtr;
+
+struct ISzAlloc {
+  void *(*Alloc)(ISzAllocPtr p, size_t size);
+  void (*Free)(ISzAllocPtr p, void *address); /* address can be 0 */
+};
+
+typedef int SRes;
+
+typedef enum { SZ_SEEK_SET = 0, SZ_SEEK_CUR = 1, SZ_SEEK_END = 2 } ESzSeek;
+
+typedef struct ILookInStream ILookInStream;
+struct ILookInStream {
+  SRes (*Look)(const ILookInStream *p, const void **buf, size_t *size);
+  /* if (input(*size) != 0 && output(*size) == 0) means end_of_stream.
+     (output(*size) > input(*size)) is not allowed
+     (output(*size) < input(*size)) is allowed */
+  SRes (*Skip)(const ILookInStream *p, size_t offset);
+  /* offset must be <= output(*size) of Look */
+
+  SRes (*Read)(const ILookInStream *p, void *buf, size_t *size);
+  /* reads directly (without buffer). It's same as ISeqInStream::Read */
+  SRes (*Seek)(const ILookInStream *p, int64_t *pos, ESzSeek origin);
+};
+
 typedef struct {
   uint32_t Low;
   uint32_t High;

@@ -4,7 +4,7 @@ import os
 
 class LzmaConan(ConanFile):
   name = "lzma"
-  version = "1.0"
+  version = "1.1"
   license = "public domain"
   url = "https://github.com/ck33122/lzma"
   description = "conan lzma package"

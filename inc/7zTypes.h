@@ -10,6 +10,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include "7zStructs.h"
 
 #ifndef EXTERN_C_BEGIN
 #ifdef __cplusplus
@@ -40,8 +41,6 @@ EXTERN_C_BEGIN
 
 #define SZ_ERROR_ARCHIVE 16
 #define SZ_ERROR_NO_ARCHIVE 17
-
-typedef int SRes;
 
 #ifdef _WIN32
 
@@ -161,8 +160,6 @@ struct ISeqOutStream {
 };
 #define ISeqOutStream_Write(p, buf, size) (p)->Write(p, buf, size)
 
-typedef enum { SZ_SEEK_SET = 0, SZ_SEEK_CUR = 1, SZ_SEEK_END = 2 } ESzSeek;
-
 typedef struct ISeekInStream ISeekInStream;
 struct ISeekInStream {
   SRes (*Read)(const ISeekInStream *p, void *buf,
@@ -171,20 +168,6 @@ struct ISeekInStream {
 };
 #define ISeekInStream_Read(p, buf, size) (p)->Read(p, buf, size)
 #define ISeekInStream_Seek(p, pos, origin) (p)->Seek(p, pos, origin)
-
-typedef struct ILookInStream ILookInStream;
-struct ILookInStream {
-  SRes (*Look)(const ILookInStream *p, const void **buf, size_t *size);
-  /* if (input(*size) != 0 && output(*size) == 0) means end_of_stream.
-     (output(*size) > input(*size)) is not allowed
-     (output(*size) < input(*size)) is allowed */
-  SRes (*Skip)(const ILookInStream *p, size_t offset);
-  /* offset must be <= output(*size) of Look */
-
-  SRes (*Read)(const ILookInStream *p, void *buf, size_t *size);
-  /* reads directly (without buffer). It's same as ISeqInStream::Read */
-  SRes (*Seek)(const ILookInStream *p, Int64 *pos, ESzSeek origin);
-};
 
 #define ILookInStream_Look(p, buf, size) (p)->Look(p, buf, size)
 #define ILookInStream_Skip(p, offset) (p)->Skip(p, offset)
@@ -240,14 +223,6 @@ struct ICompressProgress {
 };
 #define ICompressProgress_Progress(p, inSize, outSize)                         \
   (p)->Progress(p, inSize, outSize)
-
-typedef struct ISzAlloc ISzAlloc;
-typedef const ISzAlloc *ISzAllocPtr;
-
-struct ISzAlloc {
-  void *(*Alloc)(ISzAllocPtr p, size_t size);
-  void (*Free)(ISzAllocPtr p, void *address); /* address can be 0 */
-};
 
 #define ISzAlloc_Alloc(p, size) (p)->Alloc(p, size)
 #define ISzAlloc_Free(p, a) (p)->Free(p, a)

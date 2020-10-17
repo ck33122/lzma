@@ -2,7 +2,7 @@
 
 ## about
 
-This project is small subset of LZMA SDK with crossplatform setup under CMake.  
+This project is small subset of LZMA SDK with crossplatform setup under CMake and conan.  
 It only allows to read 7z archive from disk.
 
 ## LZMA SDK license
@@ -16,4 +16,4 @@ Add remote to get ckristen packages from bintray:
 ```conan remote add ckristen https://api.bintray.com/conan/ckristen/conan```
 
 Add dependency to your project:
-```lzma/1.0@ckristen/master```
+```lzma/1.1@ckristen/master```
