@@ -8,8 +8,6 @@
 /* #include <windows.h> */
 #endif
 
-#include <stddef.h>
-#include <stdint.h>
 #include "7zStructs.h"
 
 #ifndef EXTERN_C_BEGIN
@@ -138,12 +136,6 @@ struct IByteOut {
 };
 #define IByteOut_Write(p, b) (p)->Write(p, b)
 
-typedef struct ISeqInStream ISeqInStream;
-struct ISeqInStream {
-  SRes (*Read)(const ISeqInStream *p, void *buf, size_t *size);
-  /* if (input(*size) != 0 && output(*size) == 0) means end_of_stream.
-     (output(*size) < input(*size)) is allowed */
-};
 #define ISeqInStream_Read(p, buf, size) (p)->Read(p, buf, size)
 
 /* it can return SZ_ERROR_INPUT_EOF */
@@ -152,20 +144,8 @@ SRes SeqInStream_Read2(const ISeqInStream *stream, void *buf, size_t size,
                        SRes errorType);
 SRes SeqInStream_ReadByte(const ISeqInStream *stream, Byte *buf);
 
-typedef struct ISeqOutStream ISeqOutStream;
-struct ISeqOutStream {
-  size_t (*Write)(const ISeqOutStream *p, const void *buf, size_t size);
-  /* Returns: result - the number of actually written bytes.
-     (result < size) means error */
-};
 #define ISeqOutStream_Write(p, buf, size) (p)->Write(p, buf, size)
 
-typedef struct ISeekInStream ISeekInStream;
-struct ISeekInStream {
-  SRes (*Read)(const ISeekInStream *p, void *buf,
-               size_t *size); /* same as ISeqInStream::Read */
-  SRes (*Seek)(const ISeekInStream *p, Int64 *pos, ESzSeek origin);
-};
 #define ISeekInStream_Read(p, buf, size) (p)->Read(p, buf, size)
 #define ISeekInStream_Seek(p, pos, origin) (p)->Seek(p, pos, origin)
 

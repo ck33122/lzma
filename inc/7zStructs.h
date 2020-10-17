@@ -2,6 +2,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#ifdef _WIN32
+#define USE_WINDOWS_FILE
+#include <windows.h>
+#else
+#include <stdio.h>
+#endif
+
 typedef struct ISzAlloc ISzAlloc;
 typedef const ISzAlloc *ISzAllocPtr;
 
@@ -27,6 +34,54 @@ struct ILookInStream {
   /* reads directly (without buffer). It's same as ISeqInStream::Read */
   SRes (*Seek)(const ILookInStream *p, int64_t *pos, ESzSeek origin);
 };
+
+typedef struct ISeqInStream ISeqInStream;
+struct ISeqInStream {
+  SRes (*Read)(const ISeqInStream *p, void *buf, size_t *size);
+  /* if (input(*size) != 0 && output(*size) == 0) means end_of_stream.
+     (output(*size) < input(*size)) is allowed */
+};
+
+typedef struct ISeekInStream ISeekInStream;
+struct ISeekInStream {
+  SRes (*Read)(const ISeekInStream *p, void *buf,
+               size_t *size); /* same as ISeqInStream::Read */
+  SRes (*Seek)(const ISeekInStream *p, int64_t *pos, ESzSeek origin);
+};
+
+typedef struct ISeqOutStream ISeqOutStream;
+struct ISeqOutStream {
+  size_t (*Write)(const ISeqOutStream *p, const void *buf, size_t size);
+  /* Returns: result - the number of actually written bytes.
+     (result < size) means error */
+};
+
+typedef struct
+{
+  #ifdef USE_WINDOWS_FILE
+  HANDLE handle;
+  #else
+  FILE *file;
+  #endif
+} CSzFile;
+
+typedef struct
+{
+  ISeqInStream vt;
+  CSzFile file;
+} CFileSeqInStream;
+
+typedef struct
+{
+  ISeekInStream vt;
+  CSzFile file;
+} CFileInStream;
+
+typedef struct
+{
+  ISeqOutStream vt;
+  CSzFile file;
+} CFileOutStream;
 
 typedef struct {
   uint32_t Low;

@@ -4,30 +4,11 @@
 #ifndef __7Z_FILE_H
 #define __7Z_FILE_H
 
-#ifdef _WIN32
-#define USE_WINDOWS_FILE
-#endif
-
-#ifdef USE_WINDOWS_FILE
-#include <windows.h>
-#else
-#include <stdio.h>
-#endif
-
 #include "7zTypes.h"
 
 EXTERN_C_BEGIN
 
 /* ---------- File ---------- */
-
-typedef struct
-{
-  #ifdef USE_WINDOWS_FILE
-  HANDLE handle;
-  #else
-  FILE *file;
-  #endif
-} CSzFile;
 
 void File_Construct(CSzFile *p);
 #if !defined(UNDER_CE) || !defined(USE_WINDOWS_FILE)
@@ -52,29 +33,9 @@ WRes File_GetLength(CSzFile *p, UInt64 *length);
 
 /* ---------- FileInStream ---------- */
 
-typedef struct
-{
-  ISeqInStream vt;
-  CSzFile file;
-} CFileSeqInStream;
-
 void FileSeqInStream_CreateVTable(CFileSeqInStream *p);
 
-
-typedef struct
-{
-  ISeekInStream vt;
-  CSzFile file;
-} CFileInStream;
-
 void FileInStream_CreateVTable(CFileInStream *p);
-
-
-typedef struct
-{
-  ISeqOutStream vt;
-  CSzFile file;
-} CFileOutStream;
 
 void FileOutStream_CreateVTable(CFileOutStream *p);
 
